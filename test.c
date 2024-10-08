@@ -51,10 +51,23 @@ TEST_CASE(test_string_find) {
     string_free(substr);
 }
 
+TEST_CASE(test_string_replace) {
+    string_t *str = string_create("Hello, World!");
+    const char *old_sub = "World";
+    const char *new_sub = "Universe";
+
+    string_t *result = string_replace(str, old_sub, new_sub);
+    ASSERT_STR_EQ("Hello, Universe!", result->data);
+
+    string_free(str);
+    string_free(result);  // No need to free old_sub and new_sub as they are literals
+}
+
 int main() {
     RUN_TEST(test_string_create);
     RUN_TEST(test_string_append);
     RUN_TEST(test_string_find);
+    RUN_TEST(test_string_replace);
     // I will implement the tests lefting, now I'm too tired
     return 0;
 }

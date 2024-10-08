@@ -29,6 +29,7 @@ DSA void string_trim(string_t* str);
 DSA void string_trim_left(string_t* str);
 DSA void string_trim_right(string_t* str);
 DSA int string_compare(const string_t* str1, const string_t* str2);
+DSA string_t *string_replace(string_t *str, const char *old_sub, const char *new_sub);
 
 #ifdef ST_IMPLEMENTATION
 
@@ -170,7 +171,7 @@ DSA void string_trim(string_t* str) {
     string_trim_right(str);
 }
 
-void string_trim_left(string_t* str) {
+DSA void string_trim_left(string_t* str) {
     size_t start = 0;
     while (start < str->length && isspace((unsigned char)str->data[start]))
         start++;
@@ -181,7 +182,7 @@ void string_trim_left(string_t* str) {
     }
 }
 
-void string_trim_right(string_t* str) {
+DSA void string_trim_right(string_t* str) {
     while (str->length > 0 && isspace((unsigned char)str->data[str->length - 1]))
         str->length--;
     str->data[str->length] = '\0';
@@ -192,6 +193,32 @@ DSA int string_compare(const string_t* str1, const string_t* str2) {
         return 0;
     }
     return strcmp(str1->data, str2->data) == 0 ? 1 : 0;
+}
+
+DSA string_t *string_replace(string_t *str, const char *old_sub, const char *new_sub) {
+    if (!str || !old_sub || !new_sub || strlen(old_sub) == 0) return NULL;
+
+    char *pos = strstr(str->data, old_sub);
+    if (!pos) {
+        return NULL; 
+    }
+
+    size_t new_len = str->length - strlen(old_sub) + strlen(new_sub);
+    string_t *result = (string_t *)malloc(sizeof(string_t));
+    if (!result) return NULL;
+    result->data = (char *)malloc(new_len + 1);
+    if (!result->data) {
+        free(result);
+        return NULL;
+    }
+    
+    size_t prefix_len = pos - str->data;
+    strncpy(result->data, str->data, prefix_len);
+    result->data[prefix_len] = '\0';
+    strcat(result->data, new_sub);
+    strcat(result->data, pos + strlen(old_sub));
+    result->length = new_len;
+    return result;
 }
 
 #endif // ST_IMPLEMENTATION
